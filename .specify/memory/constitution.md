@@ -1,50 +1,75 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!-- 
+Sync Impact Report: RSS Feed Reader Constitution v1.0.0
+- Initial ratification (first version)
+- 5 Core Principles focused on security, maintainability, and code quality
+- Templates updated: spec-template.md (quality sections), plan-template.md (task types), tasks-template.md (quality gates)
+-->
+
+# RSS Feed Reader Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Security & Input Safety
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+All user inputs (especially feed URLs) MUST be validated before processing. Data security in the 
+POC phase (single-user, in-memory storage) emphasizes safe coding practices and clear data flow. 
+CORS configuration between ASP.NET Core backend and Blazor frontend MUST be explicitly configured 
+and documented. No credentials, secrets, or sensitive data hardcoded in code. Security is non-negotiable 
+even in proof-of-concept phase, as it establishes safe practices for future production features.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### II. Clean Separation of Concerns
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+The architecture MUST maintain strict separation between frontend (Blazor WebAssembly) and backend 
+(ASP.NET Core Web API). Backend is responsible for API contracts, data management, and feed operations 
+(future). Frontend is responsible for UI, user interaction, and presentation. All communication MUST 
+occur via documented API contracts. No business logic duplication between layers. This separation 
+enables independent testing, scaling, and feature addition throughout all product phases.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### III. Code Quality & Maintainability
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+Code MUST be written for clarity and future maintainability, not just immediate functionality. 
+Variable and method names MUST be meaningful and reflect their purpose. Unnecessary complexity 
+is forbidden; follow YAGNI principles—only implement what's required for the current phase. 
+All technical decisions (tech stack choices, architectural patterns, deferred features) MUST be 
+documented. Code reviews MUST verify compliance with readability and naming standards before merge.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### IV. Testing & Quality Gates
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+Unit tests MUST cover business logic; integration tests MUST verify API communication between 
+frontend and backend. MVP-phase testing focuses on subscription management workflows (add subscription, 
+retrieve list). All tests MUST pass before feature completion. Test coverage gaps MUST be documented 
+and addressed in Extended-MVP or later phases. Testing is a quality gate; code without tests does not merge.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### V. MVP-First Incremental Development
+
+The project follows a strict MVP → Extended-MVP → Production roadmap. Each phase builds on the 
+previous without requiring architectural rework. MVP focuses on subscription management UI only; 
+feed fetching and display are deferred. No "future-proofing" that adds unnecessary complexity to 
+the current phase. When transitioning to Extended-MVP (adding feed fetching), existing code MUST 
+require only additive changes, not rewrites. This principle ensures rapid delivery without technical debt.
+
+## Architecture & Technology Requirements
+
+**Tech Stack Mandate**: ASP.NET Core Web API backend + Blazor WebAssembly frontend. This combination 
+provides rapid development for MVP, clear separation of concerns, and cross-platform support (Windows, 
+macOS, Linux). Backend uses in-memory storage for MVP phase; no database required until Extended-MVP. 
+Feed parsing (Extended-MVP) uses `System.ServiceModel.Syndication` or equivalent standard library. 
+No custom parsing implementations; use proven libraries.
+
+**Development Environment**: All developers MUST verify local setup before coding (backend runs without 
+errors, frontend loads, CORS configuration matches, no console errors). Setup verification checklists 
+are required in development documentation.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This Constitution establishes mandatory practices for all development phases. All decisions about 
+code, architecture, and feature scope MUST comply with these principles. When conflicts arise between 
+a principle and a proposed change, the Constitution takes precedence; exceptions MUST be explicitly 
+documented and approved.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Amendment Process**: Constitution changes require documentation of business rationale, impact on 
+dependent templates (spec, plan, tasks), and explicit approval. Version numbers follow semantic versioning 
+(MAJOR.MINOR.PATCH): MAJOR for principle removal or redefinition, MINOR for new principles or guidance 
+expansion, PATCH for clarifications and wording improvements.
+
+**Version**: 1.0.0 | **Ratified**: 2026-04-08 | **Last Amended**: 2026-04-08
