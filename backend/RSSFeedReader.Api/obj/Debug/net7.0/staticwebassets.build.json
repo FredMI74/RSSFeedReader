@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "Oy4jtweceBwKEeHLbgaSL33xaFf+Ps53A3MXUsEojek=",
+  "Source": "RSSFeedReader.Api",
+  "BasePath": "_content/RSSFeedReader.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

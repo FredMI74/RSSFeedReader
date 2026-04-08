@@ -1,0 +1,113 @@
+@page "/"
+@using RSSFeedReader.UI.Models
+@using RSSFeedReader.UI.Services
+@inject SubscriptionApiService ApiService
+
+<div class="container mt-4">
+    <h1>RSS Feed Subscriptions</h1>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" 
+                       placeholder="Enter feed URL (e.g., https://devblogs.microsoft.com/dotnet/feed/)" 
+                       @bind="newUrl" 
+                       @onkeyup="HandleKeyPress" />
+                <button class="btn btn-primary" @onclick="AddSubscription">Add Subscription</button>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @errorMessage
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (subscriptions == null)
+    {
+        <p class="text-muted">Loading subscriptions...</p>
+    }
+    else if (subscriptions.Count == 0)
+    {
+        <div class="alert alert-info" role="alert">
+            No subscriptions yet. Add one to get started!
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>URL</th>
+                        <th>Added</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var sub in subscriptions)
+                    {
+                        <tr>
+                            <td><a href="@sub.Url" target="_blank" rel="noopener noreferrer">@sub.Url</a></td>
+                            <td>@sub.DateAdded.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+    private List<SubscriptionDto> subscriptions = null!;
+    private string newUrl = "";
+    private string errorMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSubscriptions();
+    }
+
+    /// <summary>
+    /// Load all subscriptions from the backend API.
+    /// </summary>
+    private async Task LoadSubscriptions()
+    {
+        subscriptions = await ApiService.GetSubscriptionsAsync();
+        errorMessage = "";
+    }
+
+    /// <summary>
+    /// Add a new subscription to the backend API.
+    /// </summary>
+    private async Task AddSubscription()
+    {
+        if (string.IsNullOrWhiteSpace(newUrl))
+        {
+            errorMessage = "Please enter a valid URL";
+            return;
+        }
+
+        var success = await ApiService.AddSubscriptionAsync(newUrl);
+        if (success)
+        {
+            newUrl = "";
+            await LoadSubscriptions();
+        }
+        else
+        {
+            errorMessage = "Failed to add subscription. Please check the URL and try again.";
+        }
+    }
+
+    /// <summary>
+    /// Allow adding subscription with Enter key.
+    /// </summary>
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await AddSubscription();
+        }
+    }
+}
